@@ -3,63 +3,65 @@ package CharsHolder;
 import java.security.SecureRandom;
 import java.util.Random;
 
+
 public class CharsList {
-    private char[] upperCase;
-    private char[] lowerCase;
-    private char[] digits;
+    private final int firstDigit=48 ,lastDigit=57;
+    private final int firstLowerCase=97 ,lastLowerCase=122;
+    private final int firstUpperCase=65 ,lastUpperCase=90;
     private char[] symbols;
-    private String whole;
     private Random rand;
     private SecureRandom secureRandom;
     public CharsList(){
-        upperCase = new char[]{'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-        lowerCase = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-        digits ="0123456789".toCharArray();
         symbols ="!@#$%^&*(){}[]\\|:\";'<>?,./".toCharArray();
-        whole= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(){}[]\\|:\";'<>?,./";
         rand= new Random();
         secureRandom=new SecureRandom();
 
     }
-    public String getWhole(){
-        return whole;
+    public char[] getUpperList(){
+        return getStringFromAscii(firstUpperCase, lastUpperCase).toCharArray();
     }
-    public char getUpperChar(){
-        return upperCase[rand.nextInt(upperCase.length)];
+    public char[] getLowerList(){
+        return getStringFromAscii(firstLowerCase, lastLowerCase).toCharArray();
     }
-    public char getLowerChar(){
-        return lowerCase[rand.nextInt(lowerCase.length)];
+    public char[] getDigitList(){
+        return getStringFromAscii(firstDigit,lastDigit).toCharArray();
     }
-    public char getDigitChar(){
-        return digits[rand.nextInt(digits.length)];
+    private String getStringFromAscii(int first, int last) {
+        StringBuilder list=new StringBuilder();
+        for (int x = first; x<= last; x++){
+            list.append((char)x);
+        }
+        return list.toString();
     }
-    public char getSymbolChar(){
+
+    public String getWholeCharString(){
+        return getStringFromAscii(33,125);
+    }
+    public char getRandomUpperChar(){
+        return (char) (rand.nextInt(lastUpperCase-firstUpperCase)+firstUpperCase);
+    }
+    public char getRandomLowerChar(){
+        return (char) (rand.nextInt(lastLowerCase-firstLowerCase)+firstLowerCase);
+    }
+    public char getRandomDigitChar(){
+        return (char) (rand.nextInt(lastDigit-firstDigit)+firstDigit);
+    }
+    public char getRandomSymbolChar(){
         return symbols[rand.nextInt(symbols.length)];
-    }public char getSecUpperChar(){
-        return upperCase[secureRandom.nextInt(upperCase.length)];
     }
-    public char getSecLowerChar(){
-        return lowerCase[secureRandom.nextInt(lowerCase.length)];
+    public char getSecureRandomUpperChar(){
+        return (char) (secureRandom.nextInt(lastUpperCase-firstUpperCase)+firstUpperCase);
     }
-    public char getSecDigitChar(){
-        return digits[secureRandom.nextInt(digits.length)];
+    public char getSecureRandomLowerChar(){
+        return (char) (secureRandom.nextInt(lastLowerCase-firstLowerCase)+firstLowerCase);
     }
-    public char getSecSymbolChar(){
+    public char getSecureRandomDigitChar(){
+        return (char) (secureRandom.nextInt(lastDigit-firstDigit)+firstDigit);
+    }
+    public char getSecureRandomSymbolChar(){
         return symbols[secureRandom.nextInt(symbols.length)];
     }
-    public char[] getUpperCase() {
-        return upperCase;
-    }
-
-    public char[] getLowerCase() {
-        return lowerCase;
-    }
-
-    public char[] getDigits() {
-        return digits;
-    }
-
-    public char[] getSymbols() {
+    public char[] getSymbolsList() {
         return symbols;
     }
 }

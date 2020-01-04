@@ -1,13 +1,13 @@
 package Controllers;
 
 import CharsHolder.CharsList;
-import Generators.RandomGenerator;
+import Generators.PasswordGenerator;
 import view.Window;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.FileOutputStream;
@@ -32,39 +32,34 @@ public class WindowController extends Window {
         updateContent();
     }
     private void initSpinners(){
-        getPasswordQuantity().addChangeListener(e -> {
-            //System.out.println("value changed: " + getPasswordQuantity().getValue());
-            //updateContent();
-        });
         getDigitsQuantity().addChangeListener(e -> {
-            //System.out.println("value changed: " + getPasswordQuantity().getValue());
             updateContent();
         });
         getSpecialQuantity().addChangeListener(e -> {
-            //System.out.println("value changed: " + getSpecialQuantity().getValue());
             updateContent();
         });
         getLowerCaseQuantity().addChangeListener(e -> {
-            //System.out.println("value changed: " + getPasswordQuantity().getValue());
             updateContent();
         });
         getUpperCaseQuantity().addChangeListener(e -> {
-            //System.out.println("value changed: " + getPasswordQuantity().getValue());
             updateContent();
         });
         getAlgorithmChooser().addActionListener(e->{
-            if(getAlgorithmChooser().getSelectedIndex()==2){
-                getAllowedChar().setEditable(true);
-                getNumberOfCharacters().setEditable(true);
-                getSpecialQuantity().setValue(0);
-                getDigitsQuantity().setValue(0);
-                getLowerCaseQuantity().setValue(0);
-                getUpperCaseQuantity().setValue(0);
-                getAllowedChar().setText("Wprowadz własne znaki!\nWprowadz liczbe znakow!");}
-            else{
-                getAllowedChar().setEditable(false);
-                updateContent();}
+            cheackChooseedAlgorithm();
         });
+    }
+    private void cheackChooseedAlgorithm(){
+        if(getAlgorithmChooser().getSelectedIndex()==2){
+            getAllowedChar().setEditable(true);
+            getNumberOfCharacters().setEditable(true);
+            getSpecialQuantity().setValue(0);
+            getDigitsQuantity().setValue(0);
+            getLowerCaseQuantity().setValue(0);
+            getUpperCaseQuantity().setValue(0);
+            getAllowedChar().setText("Wprowadz własne znaki!\nWprowadz liczbe znakow!");}
+        else{
+            getAllowedChar().setEditable(false);
+            updateContent();}
     }
     private void initButtons(){
         getGenerate().addActionListener(e -> {
@@ -74,7 +69,7 @@ public class WindowController extends Window {
             switch (getAlgorithmChooser().getSelectedIndex()){
                 case 0:
                     for(int x = 0; x<quantity; x++){
-                        passwords.append(RandomGenerator.GeneratePassword(
+                        passwords.append(PasswordGenerator.GeneratePasswordWithRandom(
                                 (int) getUpperCaseQuantity().getValue(),
                                 (int) getLowerCaseQuantity().getValue(),
                                 (int) getDigitsQuantity().getValue(),
@@ -84,7 +79,7 @@ public class WindowController extends Window {
                     break;
                 case 1:
                     for(int x = 0; x<quantity; x++){
-                        passwords.append(RandomGenerator.SecureGeneratePassword(
+                        passwords.append(PasswordGenerator.GeneratePasswordWithSecureRandom(
                                 (int) getUpperCaseQuantity().getValue(),
                                 (int) getLowerCaseQuantity().getValue(),
                                 (int) getDigitsQuantity().getValue(),
@@ -94,46 +89,41 @@ public class WindowController extends Window {
                     break;
                 case 2:
                     for(int x = 0; x<quantity; x++){
-                    passwords.append(RandomGenerator.OwnCharGeneratePassword(
+                    passwords.append(PasswordGenerator.GeneratePasswordWithOwnChar(
                             Integer.parseInt(getNumberOfCharacters().getText()),
                             getAllowedChar().getText())).append('\n');
+                    }
+                    break;
+                default:
+                    throw new IndexOutOfBoundsException("Algorytm bez deklaracji");
 
-            }}
+            }
             System.out.println(passwords);
             getPasswordDisplay().setText(passwords.toString());
         });
         getCopyPassword().addActionListener(e-> {
-            String myString = getPasswordDisplay().getText();
-            StringSelection stringSelection = new StringSelection(myString);
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(stringSelection, null);
+            coppyPasswordsToClipBoard();
         });
         getSentToEmail().addActionListener(e-> {
-        sendEmail();
-        }
-        );
-        getSaveToFile().addActionListener(e->{
-            try {
-                FileOutputStream out = new FileOutputStream("passwords.txt");
-                byte[] strToByte = getPasswordDisplay().getText().getBytes();
-                out.write(strToByte);
-                out.close();
-                System.out.println("zapisano!");
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-
+            sendEmail();
         });
+        getSaveToFile().addActionListener(e->{
+            savePasswordsToFile();
+        });
+    }
+    private void coppyPasswordsToClipBoard(){
+        String myString = getPasswordDisplay().getText();
+        StringSelection stringSelection = new StringSelection(myString);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
     }
     private void sendEmail(){
         String to= "";
-        // Recipient's email ID needs to be mentioned.
         if(getEmailAdress().getText().contains("@")) to = getEmailAdress().getText();
         else return;
-        // Sender's email ID needs to be mentioned
-        String from = "widek1234@o2.pl";
-        final String username = "widek1234@o2.pl";//change accordingly
-        final String password = "o2jestfajne321";//change accordingly
+        String from = "senderEmail@gmail.pl";
+        final String username = "username";//change accordingly
+        final String password = "passwoerd";//change accordingly
 
         // Assuming you are sending email through relay.jangosmtp.net
         //String host = "relay.jangosmtp.net";
@@ -165,11 +155,11 @@ public class WindowController extends Window {
                     InternetAddress.parse(to));
 
             // Set Subject: header field
-            message.setSubject("Testing Subject");
+            message.setSubject("Generated Password");
 
             // Now set the actual message
-            message.setText("Hello, this is sample for to check send " +
-                    "email using JavaMailAPI ");
+            message.setText("Hello, there are your generated passwords:\n" +
+                    getPasswordDisplay().getText());
 
             // Send message
             Transport.send(message);
@@ -180,36 +170,46 @@ public class WindowController extends Window {
             throw new RuntimeException(e);
         }
     }
+    private void savePasswordsToFile(){
+        try {
+            FileOutputStream out = new FileOutputStream("passwords.txt");
+            byte[] strToByte = getPasswordDisplay().getText().getBytes();
+            out.write(strToByte);
+            out.close();
+            System.out.println("zapisano!");
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+    }
     private void updateContent(){
         printCharList();
         int digits=(int)getUpperCaseQuantity().getValue()+(int)getLowerCaseQuantity().getValue()+
                 (int)getSpecialQuantity().getValue()+(int)getDigitsQuantity().getValue();
         getNumberOfCharacters().setText(String.valueOf(digits));
     }
-    public void printCharList(){
+    private void printCharList(){
         StringBuilder charsToView= new StringBuilder();
         if((int)getUpperCaseQuantity().getValue()>0){
-            for(char x: charsList.getUpperCase()){
+            for(char x: charsList.getUpperList()){
                 charsToView.append(x);
             }
         }
         if((int)getLowerCaseQuantity().getValue()>0){
-            for(char x: charsList.getLowerCase()){
+            for(char x: charsList.getLowerList()){
                 charsToView.append(x);
             }
         }
         if((int)getDigitsQuantity().getValue()>0){
-            for(char x: charsList.getDigits()){
+            for(char x: charsList.getDigitList()){
                 charsToView.append(x);
             }
         }
         if((int)getSpecialQuantity().getValue()>0){
-            for(char x: charsList.getSymbols()){
+            for(char x: charsList.getSymbolsList()){
                 charsToView.append(x);
             }
         }
         if(charsToView.length()==0) charsToView.append("Opcja standardowa!\nDuże litery:1\nmałe litery:5\ncyfry:1\nznaki specjalne:1");
-        //System.out.println(charsToView.length());
         getAllowedChar().setText(String.valueOf(charsToView));
     }
 
