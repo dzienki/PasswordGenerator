@@ -1,0 +1,105 @@
+@startuml
+
+package "view"{
+class view.Window<? extends JFrame>{
+          {static} - HEIGHT : int
+          {static} - WIDTH : int
+          - algorithmChooser : JComboBox<String>
+          - allowedChar : JTextArea
+          - copyPassword : JButton
+          - digitsQuantity : JSpinner
+          - emailAdress : JTextField
+          - generate : JButton
+          - lowerCaseQuantity : JSpinner
+          - numberOfCharacters : JTextField
+          - panel1 : JPanel
+          - passwordDisplay : JTextArea
+          - passwordQuantity : JSpinner
+          - saveToFile : JButton
+          - sentToEmail : JButton
+          - specialQuantity : JSpinner
+          - upperCaseQuantity : JSpinner
+          + Window()
+          + getAlgorithmChooser(): JComboBox<String>
+          + getAllowedChar() : JTextArea
+          + getCopyPassword(): JButton
+          + getDigitsQuantity(): JSpinner
+          + getEmailAdress(): JTextField
+          + getGenerate(): JButton
+          + getLowerCaseQuantity() : JSpinner
+          + getNumberOfCharacters(): JTextField
+          + getPasswordDisplay(): JTextArea
+          + getPasswordQuantity() : JSpinner
+          + getSaveToFile() : JButton
+          + getSentToEmail() : JButton
+          + getSpecialQuantity() : JSpinner
+          + getUpperCaseQuantity() : JSpinner
+          - createUIComponents() : void
+}
+}
+package "mailSender" {
+  class mailSender.sendMail {
+      {static} + sendEmail(email : String, text: String) : void
+  }
+}
+package "generators" {
+  abstract class generators.PasswordGenerator {
+      {static} + GeneratePasswordWithOwnChar(digits : int, allowedChars : String) : String
+      {static} + GeneratePasswordWithRandom(upper : int, lower : int, digit: int, special: int): String
+      {static} + GeneratePasswordWithSecureRandom(upper : int, lower : int, digit: int, special: int): String
+      {static} - deleteEndLines(chars : String) : String
+      {static} - shuffleCharacters(input : StringBuilder) : StringBuilder
+  }
+}
+package "controllers" {
+  class controllers.WindowController {
+      - charsList : CharsList
+      + WindowController()
+      - checkChosenAlgorithm() : void
+      - coppyPasswordsToClipBoard() : void
+      - initButtons() : void
+      - initSpinners() : void
+      - printCharList() : void
+      - savePasswordsToFile() : void
+      - updateContent() : void
+  }
+}
+package "charsHolder" {
+   class charsHolder.CharsList {
+       - firstDigit : int
+       - firstLowerCase : int
+       - firstUpperCase : int
+       - lastDigit : int
+       - lastLowerCase : int
+       - lastUpperCase : int
+       - rand : Random
+       - secureRandom : SecureRandom
+       - symbols : char[]
+       + CharsList()
+       + getDigitList() : char[]
+       + getLowerList() : char[]
+       + getRandomDigitChar() : char
+       + getRandomLowerChar() : char
+       + getRandomSymbolChar() : char
+       + getRandomUpperChar() : char
+       + getSecureRandomDigitChar() : char
+       + getSecureRandomLowerChar() : char
+       + getSecureRandomSymbolChar() : char
+       + getSecureRandomUpperChar() : char
+       + getSymbolsList() : char[]
+       + getUpperList() : char[]
+       + getWholeCharString() : char[]
+       - getStringFromAscii(first : int, last : int) : String
+   }
+}
+class Main{
+ + {static} main(args : String)
+}
+generators.PasswordGenerator o-- charsHolder.CharsList
+Main o-- controllers.WindowController
+controllers.WindowController --> generators.PasswordGenerator
+controllers.WindowController --> mailSender.sendMail
+controllers.WindowController --|> view.Window
+controllers.WindowController o-- charsHolder.CharsList : charsList
+
+@enduml

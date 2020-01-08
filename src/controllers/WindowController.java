@@ -1,7 +1,7 @@
-package Controllers;
+package controllers;
 
-import CharsHolder.CharsList;
-import Generators.PasswordGenerator;
+import charsHolder.CharsList;
+import generators.PasswordGenerator;
 import view.Window;
 import mailSender.sendMail;
 

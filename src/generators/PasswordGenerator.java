@@ -1,6 +1,6 @@
-package Generators;
+package generators;
 
-import CharsHolder.CharsList;
+import charsHolder.CharsList;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;

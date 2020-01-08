@@ -1,4 +1,4 @@
-import Controllers.WindowController;
+import controllers.WindowController;
 
 import javax.swing.*;
 
