@@ -1,26 +1,100 @@
 @startuml
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+package "view"{
+class view.Window{
+          {static} - HEIGHT : int
+          {static} - WIDTH : int
+          - algorithmChooser : JComboBox<String>
+          - allowedChar : JTextArea
+          - copyPassword : JButton
+          - digitsQuantity : JSpinner
+          - emailAdress : JTextField
+          - generate : JButton
+          - lowerCaseQuantity : JSpinner
+          - numberOfCharacters : JTextField
+          - panel1 : JPanel
+          - passwordDisplay : JTextArea
+          - passwordQuantity : JSpinner
+          - saveToFile : JButton
+          - sentToEmail : JButton
+          - specialQuantity : JSpinner
+          - upperCaseQuantity : JSpinner
+          + Window()
+          + getAlgorithmChooser()
+          + getAllowedChar()
+          + getCopyPassword()
+          + getDigitsQuantity()
+          + getEmailAdress()
+          + getGenerate()
+          + getLowerCaseQuantity()
+          + getNumberOfCharacters()
+          + getPasswordDisplay()
+          + getPasswordQuantity()
+          + getSaveToFile()
+          + getSentToEmail()
+          + getSpecialQuantity()
+          + getUpperCaseQuantity()
+          - createUIComponents()
 }
-
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
 }
+package "mailSender" {
+  class mailSender.sendMail {
+      {static} + sendEmail()
+  }
+}
+package "Generators" {
+  abstract class Generators.PasswordGenerator {
+      {static} + GeneratePasswordWithOwnChar()
+      {static} + GeneratePasswordWithRandom()
+      {static} + GeneratePasswordWithSecureRandom()
+      {static} - deleteEndLines()
+      {static} - shuffleCharacters()
+  }
+}
+package "Controllers" {
+  class Controllers.WindowController {
+      + WindowController()
+      - checkChosenAlgorithm()
+      - coppyPasswordsToClipBoard()
+      - initButtons()
+      - initSpinners()
+      - printCharList()
+      - savePasswordsToFile()
+      - updateContent()
+  }
+}
+package "CharsHolder" {
+   class CharsHolder.CharsList {
+       - firstDigit : int
+       - firstLowerCase : int
+       - firstUpperCase : int
+       - lastDigit : int
+       - lastLowerCase : int
+       - lastUpperCase : int
+       - rand : Random
+       - secureRandom : SecureRandom
+       - symbols : char[]
+       + CharsList()
+       + getDigitList()
+       + getLowerList()
+       + getRandomDigitChar()
+       + getRandomLowerChar()
+       + getRandomSymbolChar()
+       + getRandomUpperChar()
+       + getSecureRandomDigitChar()
+       + getSecureRandomLowerChar()
+       + getSecureRandomSymbolChar()
+       + getSecureRandomUpperChar()
+       + getSymbolsList()
+       + getUpperList()
+       + getWholeCharString()
+       - getStringFromAscii()
+   }
+}
+view.Window --> Generators.PasswordGenerator
+view.Window --> mailSender.sendMail
+view.Window --|> javax.swing.JFrame
+Controllers.WindowController --|> view.Window
+Controllers.WindowController o-- CharsHolder.CharsList : charsList
 
 @enduml
