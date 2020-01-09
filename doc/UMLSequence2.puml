@@ -1,0 +1,48 @@
+@startuml
+actor Użytkownik
+Main -> WindowController : <<create>>
+WindowController -> Window : <<create>>
+WindowController <-- Window
+WindowController -> WindowController : Wyświetl listę znaków
+WindowController -> WindowController : Zainicjuj przyciski
+WindowController -> WindowController : zainicjuj spinery
+Użytkownik ->WindowController: Naciśnięcie przycisku generuj\nz wybranym algorytmem "Random"
+WindowController -> PasswordGenerator : GeneratePasswordWithRandom
+PasswordGenerator -> CharList : <<create>>
+PasswordGenerator <-- CharList: zwraca pojedyńcze znaki hasła
+PasswordGenerator -> PasswordGenerator : losuje kolejność poszczególnych znaków
+WindowController <-- PasswordGenerator : zwraca hasła
+WindowController -> WindowController :  wyświetla hasła na ekranie
+Użytkownik ->WindowController: Naciśnięcie przycisku generuj\nz wybranym algorytmem "SecureRandom"
+WindowController -> PasswordGenerator : GeneratePasswordWithSecureRandom
+PasswordGenerator -> CharList : <<create>>
+PasswordGenerator <-- CharList: zwraca pojedyńcze znaki hasła
+PasswordGenerator -> PasswordGenerator : losuje kolejność poszczególnych znaków
+WindowController <-- PasswordGenerator : zwraca hasła
+WindowController -> WindowController :  wyświetla hasła na ekranie
+Użytkownik ->WindowController: Naciśnięcie przycisku generuj\nz wybranym algorytmem "OwnChar"
+WindowController -> PasswordGenerator : GeneratePasswordWithOwnChar
+PasswordGenerator -> CharList : <<create>>
+PasswordGenerator <-- CharList: zwraca znaki wpisane w polu "allowedChar"
+PasswordGenerator -> PasswordGenerator : deleteEndLines
+PasswordGenerator <-- CharList: zwraca pojedyńcze znaki hasła
+WindowController <-- PasswordGenerator : zwraca hasła
+WindowController -> WindowController :  wyświetla hasła na ekranie
+Użytkownik ->WindowController: Naciśnięcie przycisku "skopiuj do schowka"
+WindowController -> WindowController : coppyPasswordsToClipBoard
+Użytkownik ->WindowController: Naciśnięcie przycisku "Wyślij na email"
+WindowController -> SendMail : sendEmail
+database Database
+SendMail -> SendMail :sprawdza poprawność adresu\nodbiorcy
+SendMail -> Database :łączy się z serwerem email\nloguje na konto oraz wysyła
+SendMail <-- Database
+WindowController <-- SendMail
+Użytkownik ->WindowController: Naciśnięcie przycisku "Zapisz do pliku"
+WindowController -> WindowController : zapisuje wygenerowane\nhasła widniejące na wyświetlaczu
+Użytkownik ->WindowController: Użytkownik zmienia wartości w spinerze
+WindowController -> WindowController : sumuje ilość znaków oraz\nwyświetla ją w polu "ilość znaków"
+Użytkownik ->WindowController: Wybranie innego algorytmu
+WindowController -> WindowController: Przygotowanie programu\ndo użycia odpowiedniego algorytmu
+Użytkownik ->WindowController: Wyjście z programu
+Main <-- WindowController
+@enduml

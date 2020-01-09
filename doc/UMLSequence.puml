@@ -1,0 +1,30 @@
+@startuml
+Main -> WindowController : <<create>>
+WindowController -> Window : <<create>>
+WindowController <-- Window
+WindowController -> WindowController : printCharList
+WindowController -> WindowController : initButtons
+WindowController -> PasswordGenerator : GeneratePasswordWithRandom
+PasswordGenerator -> CharList : <<create>>
+PasswordGenerator <-- CharList
+PasswordGenerator -> PasswordGenerator : shuffleCharacters
+WindowController <-- PasswordGenerator
+WindowController -> PasswordGenerator : GeneratePasswordWithSecureRandom
+PasswordGenerator -> CharList : <<create>>
+PasswordGenerator <-- CharList
+PasswordGenerator -> PasswordGenerator : shuffleCharacters
+WindowController -> PasswordGenerator : GeneratePasswordWithOwnChar
+PasswordGenerator -> CharList : <<create>>
+PasswordGenerator <-- CharList
+PasswordGenerator -> PasswordGenerator : deleteEndLines
+WindowController -> WindowController : coppyPasswordsToClipBoard
+WindowController -> SendMail : sendEmail
+database Database
+SendMail -> Database :getPasswordAuthentication
+SendMail <-- Database
+WindowController <-- SendMail
+WindowController -> WindowController : savePasswordsToFile
+WindowController -> WindowController : initSpinners
+WindowController -> WindowController : updateContent
+Main <-- WindowController
+@enduml
